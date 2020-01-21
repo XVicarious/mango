@@ -8,6 +8,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/xvicarious/mango/crawler"
 	"github.com/xvicarious/mango/schema"
 	"gopkg.in/yaml.v2"
 )
@@ -43,13 +44,14 @@ func main() {
 	db.AutoMigrate(&schema.Library{})
 	db.AutoMigrate(&schema.Manga{})
 	db.AutoMigrate(&schema.Chapter{})
-	for _, library := range c.Libraries {
-		db.FirstOrCreate(nil,
-			&schema.Library{
-				Path: library,
-			},
+	for _, libraryMod := range c.Libraries {
+		db.FirstOrCreate(
+			&schema.Library{Path: libraryMod},
 		)
 	}
+	var library schema.Library
+	db.First(&library, 1)
+	crawler.ReadLibraryPath(&library, &db)
 	//http.HandleFunc("/", handler)
 	//log.Fatal(http.ListenAndServe(":4545", nil))
 }

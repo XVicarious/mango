@@ -7,21 +7,25 @@ import (
 
 type Chapter struct {
 	gorm.Model
-	Path string
+	Path    string
+	MangaID uint
+	Manga   Manga
 }
 
 type Manga struct {
 	gorm.Model
-	Path     string
-	Chapters []Chapter
+	Path      string
+	Chapters  []Chapter
+	LibraryID uint
+	Library   Library
 }
 
 type Library struct {
 	gorm.Model
-	Path  string
-	Manga []Manga
+	Path   string
+	Mangas []Manga
 }
 
-func Makestuff() int {
-	return 0
+func (m *Manga) FullPath() string {
+	return (m.Library.Path + "/" + m.Path)
 }
