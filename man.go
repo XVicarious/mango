@@ -6,11 +6,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/julienschmidt/httprouter"
+
 	"github.com/xvicarious/mango/crawler"
-	"github.com/xvicarious/mango/schema"
+	"github.com/xvicarious/mango/database"
 	"gopkg.in/yaml.v2"
 )
 
@@ -38,27 +38,22 @@ func main() {
 	log.Printf("Starting ManGO")
 	var c conf
 	c.openConf()
-	db, err := gorm.Open("sqlite3", "mango.sqlite3")
-	if err != nil {
-		panic("Failed to connect to db")
-	}
-	defer db.Close()
-	db.AutoMigrate(&schema.Library{})
-	db.AutoMigrate(&schema.Manga{})
-	db.AutoMigrate(&schema.Chapter{})
+	database.OpenDB()
+	defer database.CloseDB()
+	database.InitDB()
 	for _, libraryMod := range c.Libraries {
-		db.FirstOrCreate(
-			&schema.Library{Path: libraryMod},
+		database.GetDB().FirstOrCreate(
+			&database.Library{Path: libraryMod},
 		)
 	}
-	var library schema.Library
-	db.First(&library, 1)
 	log.Printf("Reading library.")
-	crawler.ReadLibraryPath(&library, &db)
-	log.Printf("Setting up web server.")
-	router := httprouter.New()
-	router.GET("/manga/:manga_id", RouteManga)
-	//router.GET("/manga/:manga_id/:chapter", RouteChapter)
-	//router.GET("/manga/:manga_id/:chapter/:page", RoutePage)
-	log.Fatal(http.ListenAndServe(":4545", router))
+	var library database.Library
+	database.GetDB().First(&library, 1)
+	crawler.ReadLibraryPath(&library)
+	// log.Printf("Setting up web server.")
+	// router := httprouter.New()
+	// router.GET("/manga/:manga_id", RouteManga)
+	// router.GET("/manga/:manga_id/:chapter", RouteChapter)
+	// router.GET("/manga/:manga_id/:chapter/:page", RoutePage)
+	// log.Fatal(http.ListenAndServe(":4545", router))
 }
