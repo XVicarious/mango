@@ -29,3 +29,7 @@ type Library struct {
 func (m *Manga) FullPath() string {
 	return (m.Library.Path + "/" + m.Path)
 }
+
+func (c *Chapter) FullPath() string {
+	return (c.Manga.FullPath() + "/" + c.Path)
+}

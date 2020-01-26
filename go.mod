@@ -36,6 +36,7 @@ require (
 	github.com/google/pprof v0.0.0-20191218002539-d4f498aebedc // indirect
 	github.com/googleapis/gax-go v2.0.2+incompatible // indirect
 	github.com/jinzhu/gorm v1.9.12
+	github.com/julienschmidt/httprouter v1.3.0
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect
 	github.com/kisielk/gotool v1.0.0 // indirect
 	github.com/nbutton23/zxcvbn-go v0.0.0-20180912185939-ae427f1e4c1d // indirect
